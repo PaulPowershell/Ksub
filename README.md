@@ -6,6 +6,7 @@ Before using this tool, ensure you have the following prerequisites:
 
 - Azure CLI (az) installed and configured.
 - kubectl installed and configured with access to your Kubernetes clusters.
+- kubectx installed
 
 ## Installation
 Clone the repository to your local machine:

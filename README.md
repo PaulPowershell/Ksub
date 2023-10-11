@@ -15,7 +15,7 @@ Before using this tool, ensure you have the following prerequisites:
 Clone the repository to your local machine:
 
 ```bash
-git clone https://github.com/yourusername/your-repo.git
+git clone https://github.com/VegaCorporoptions/Ksub
 cd your-repo
 ```
 

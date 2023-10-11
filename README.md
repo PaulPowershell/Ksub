@@ -1,6 +1,9 @@
 # Ksub - Kubernetes Subscription and Context Switcher
 Ksub is a command-line tool for switching between Azure subscriptions and Kubernetes clusters with ease.
 
+## Last Build
+[![Go Build & Release](https://github.com/VegaCorporoptions/Kram/actions/workflows/go.yml/badge.svg)](https://github.com/VegaCorporoptions/Kram/actions/workflows/go.yml)
+
 ## Prerequisites
 Before using this tool, ensure you have the following prerequisites:
 

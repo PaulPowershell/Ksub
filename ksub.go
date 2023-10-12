@@ -89,6 +89,7 @@ func setSubscription(subscriptionID string) error {
 func setKubernetesContext(selectedID string) {
 	subscriptionName := selectedID
 
+	// Take spoke number (lot) on subscription
 	re := regexp.MustCompile(`\d{6}`)
 	lot := re.FindString(subscriptionName)
 
@@ -99,6 +100,7 @@ func setKubernetesContext(selectedID string) {
 		return
 	}
 
+	// Search cluster with same spoke
 	kubecontext := ""
 	lines := strings.Split(string(output), "\n")
 	for _, line := range lines {
@@ -108,6 +110,7 @@ func setKubernetesContext(selectedID string) {
 		}
 	}
 
+	// Use kubecontext on same cluster's spoke
 	if kubecontext != "" {
 		cmd = exec.Command("kubectx", kubecontext)
 		err = cmd.Run()

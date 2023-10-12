@@ -15,7 +15,7 @@ Before using this tool, ensure you have the following prerequisites:
 Clone the repository to your local machine:
 
 ```bash
-git clone https://github.com/yourusername/your-repo.git
+git clone https://github.com/VegaCorporoptions/Ksub
 cd your-repo
 ```
 
@@ -23,6 +23,10 @@ Build the Go application:
 ```bash
 go build .
 ```
+
+## Download Ksub Executable
+You can download the executable for Ksub directly from the latest release with its version. This allows you to use Ksub without the need to build it yourself. Here are the steps to download the executable for your system:
+1. Visit the [Releases](https://github.com/VegaCorporoptions/Ksub/releases) page.
 
 ## Usage
 Ksub allows you to switch between Azure subscriptions and Kubernetes clusters efficiently. Here's how to use it:

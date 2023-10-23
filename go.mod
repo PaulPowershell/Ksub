@@ -1,4 +1,4 @@
-module main
+module ksub
 
 go 1.20
 

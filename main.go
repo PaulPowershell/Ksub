@@ -12,12 +12,16 @@ import (
 
 	"github.com/Azure/azure-sdk-for-go/profiles/latest/resources/mgmt/subscriptions"
 	"github.com/Azure/go-autorest/autorest/azure/auth"
-	"github.com/manifoldco/promptui"
+	"github.com/pterm/pterm"
 )
 
 func main() {
+	// Create spinner & Start the multi printer
+	spinner, _ := pterm.DefaultSpinner.Start("Initialization running")
+
 	authorizer, err := auth.NewAuthorizerFromCLI()
 	if err != nil {
+		spinner.Fail()
 		log.Fatalf("Failed to create Azure authorizer: %v", err)
 		return
 	}
@@ -29,6 +33,7 @@ func main() {
 
 	result, err := subscriptionsClient.List(ctx)
 	if err != nil {
+		spinner.Fail()
 		log.Fatalf("Failed to retrieve subscriptions: %v", err)
 		return
 	}
@@ -40,27 +45,14 @@ func main() {
 	}
 
 	sort.Strings(subscriptionNames)
+	spinner.Success("Initialization success")
 
-	prompt := promptui.Select{
-		Label: "Select a subscription",
-		Items: subscriptionNames,
-		Templates: &promptui.SelectTemplates{
-			Label:    "{{ . }}",
-			Active:   "\U000027A4 {{ . | cyan | bold }}",
-			Inactive: "  {{ . }}",
-		},
-		Size:         50,
-		HideSelected: true,
-	}
+	selector := pterm.DefaultInteractiveSelect.WithDefaultText("Select a subscription")
+	selector.MaxHeight = 10
+	selectedOption, _ := selector.WithOptions(subscriptionNames).Show() // The Show() method displays the options and waits for the user's input
 
-	_, selected, err := prompt.Run()
-	if err != nil {
-		log.Println("Failed to prompt selection", err)
-		return
-	}
-
-	setSubscription(selected)
-	setKubernetesContext(selected)
+	setSubscription(selectedOption)
+	setKubernetesContext(selectedOption)
 }
 
 func setSubscription(subscriptionID string) error {
@@ -79,9 +71,9 @@ func setSubscription(subscriptionID string) error {
 	// Execute the command
 	err := cmd.Run()
 	if err != nil {
-		return fmt.Errorf("failed to change Azure subscription context: %v", err)
+		pterm.Error.Println("failed to change Azure subscription context")
 	} else {
-		fmt.Println("✔ Switched to subscription", subscriptionID)
+		pterm.Success.Println("✔ Switched to subscription", subscriptionID)
 	}
 	return nil
 }
@@ -96,7 +88,7 @@ func setKubernetesContext(selectedID string) {
 	cmd := exec.Command("kubectx")
 	output, err := cmd.Output()
 	if err != nil {
-		fmt.Printf("Failed to execute 'kubectx' command: %v", err)
+		pterm.Error.Printf("Failed to execute 'kubectx' command: %v", err)
 		return
 	}
 
@@ -115,12 +107,11 @@ func setKubernetesContext(selectedID string) {
 		cmd = exec.Command("kubectx", kubecontext)
 		err = cmd.Run()
 		if err != nil {
-			fmt.Printf("Failed to switch to kubecontext: %v", err)
-			return
+			pterm.Error.Printf("Failed to switch to kubecontext: %v", err)
 		} else {
-			fmt.Println("✔ Switched to cluster", kubecontext)
+			pterm.Success.Println("✔ Switched to cluster " + kubecontext)
 		}
 	} else {
-		fmt.Println("❌ Pas de cluster associé")
+		pterm.Warning.Println("❌ Pas de cluster associé")
 	}
 }

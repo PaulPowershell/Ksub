@@ -16,7 +16,7 @@ import (
 )
 
 func main() {
-	// Create spinner & Start the multi printer
+	// Create spinner & Start
 	spinner, _ := pterm.DefaultSpinner.Start("Initialization running")
 
 	authorizer, err := auth.NewAuthorizerFromCLI()

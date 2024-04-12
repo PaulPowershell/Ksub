@@ -51,6 +51,9 @@ func main() {
 	selector.MaxHeight = 10
 	selectedOption, _ := selector.WithOptions(subscriptionNames).Show() // The Show() method displays the options and waits for the user's input
 
+	// Delete previous line X2
+	fmt.Print("\033[F\033[K\033[F\033[K")
+
 	setSubscription(selectedOption)
 	setKubernetesContext(selectedOption)
 }
@@ -112,6 +115,6 @@ func setKubernetesContext(selectedID string) {
 			pterm.Success.Println("✔ Switched to cluster " + kubecontext)
 		}
 	} else {
-		pterm.Warning.Println("❌ Pas de cluster associé")
+		pterm.Warning.Println("❌ No cluster associated")
 	}
 }

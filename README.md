@@ -20,6 +20,7 @@ cd your-repo
 ```
 
 Build the Go application:
+You need to change **const** `regexSubToCluster` in main.go with your regex
 ```bash
 go build .
 ```

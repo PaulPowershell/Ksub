@@ -3,7 +3,6 @@ package main
 import (
 	"context"
 	"fmt"
-	"log"
 	"os"
 	"os/exec"
 	"regexp"
@@ -15,15 +14,19 @@ import (
 	"github.com/pterm/pterm"
 )
 
+const (
+	// correlation regex between subscription and cluster
+	regexSubToCluster = `\d{6}`
+)
+
 func main() {
 	// Create spinner & Start
 	spinner, _ := pterm.DefaultSpinner.Start("Initialization running")
 
 	authorizer, err := auth.NewAuthorizerFromCLI()
 	if err != nil {
-		spinner.Fail()
-		log.Fatalf("Failed to create Azure authorizer: %v", err)
-		return
+		pterm.Error.Printf("Failed to create Azure authorizer: %v", err)
+		os.Exit(1)
 	}
 
 	subscriptionsClient := subscriptions.NewClient()
@@ -33,9 +36,8 @@ func main() {
 
 	result, err := subscriptionsClient.List(ctx)
 	if err != nil {
-		spinner.Fail()
-		log.Fatalf("Failed to retrieve subscriptions: %v", err)
-		return
+		pterm.Error.Printf("Failed to retrieve subscriptions: %v", err)
+		os.Exit(1)
 	}
 
 	subscriptionNames := make([]string, len(result.Values()))
@@ -61,7 +63,8 @@ func main() {
 func setSubscription(subscriptionID string) error {
 	// Check if the subscription ID is provided
 	if subscriptionID == "" {
-		return fmt.Errorf("subscription ID is required")
+		pterm.Error.Println("subscription ID is required")
+		os.Exit(1)
 	}
 
 	// Create the command to change the Azure subscription context
@@ -75,6 +78,7 @@ func setSubscription(subscriptionID string) error {
 	err := cmd.Run()
 	if err != nil {
 		pterm.Error.Println("failed to change Azure subscription context")
+		os.Exit(1)
 	} else {
 		pterm.Success.Println("✔ Switched to subscription", subscriptionID)
 	}
@@ -85,18 +89,18 @@ func setKubernetesContext(selectedID string) {
 	subscriptionName := selectedID
 
 	// Take spoke number (lot) on subscription
-	re := regexp.MustCompile(`\d{6}`)
+	re := regexp.MustCompile(regexSubToCluster)
 	lot := re.FindString(subscriptionName)
 
 	cmd := exec.Command("kubectx")
 	output, err := cmd.Output()
 	if err != nil {
 		pterm.Error.Printf("Failed to execute 'kubectx' command: %v", err)
-		return
+		os.Exit(1)
 	}
 
 	// Search cluster with same spoke
-	kubecontext := ""
+	var kubecontext string
 	lines := strings.Split(string(output), "\n")
 	for _, line := range lines {
 		if strings.Contains(line, lot) {
@@ -111,6 +115,7 @@ func setKubernetesContext(selectedID string) {
 		err = cmd.Run()
 		if err != nil {
 			pterm.Error.Printf("Failed to switch to kubecontext: %v", err)
+			os.Exit(1)
 		} else {
 			pterm.Success.Println("✔ Switched to cluster " + kubecontext)
 		}

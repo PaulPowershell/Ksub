@@ -41,7 +41,7 @@ Ksub will change your Azure subscription context to the selected one.
 Ksub will also switch your Kubernetes context to the corresponding cluster if available.
 
 ## Demo
-![ksub.png](https://github.com/VegaCorporoptions/Ksub/blob/main/ksub.png?raw=true)
+![ksub.gif](ksub.gif)
 
 ## License
 This project is licensed under the MIT License. See the LICENSE file for details.
